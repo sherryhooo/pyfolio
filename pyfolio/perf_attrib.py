@@ -461,11 +461,11 @@ def plot_factor_contribution_to_perf(
         ax.plot(factors_cumulative[col])
 
     ax.axhline(0, color='k')
-    configure_legend(ax, change_colors=True)
+    configure_legend(ax)
 
     ax.set_ylabel('Cumulative returns by factor')
     ax.set_title(title)
-
+    ax.legend()
     return ax
 
 
@@ -495,9 +495,10 @@ def plot_risk_exposures(exposures, ax=None,
     for col in exposures:
         ax.plot(exposures[col])
 
-    configure_legend(ax, change_colors=True)
+    # configure_legend(ax, change_colors=True)
     ax.set_ylabel('Factor exposures')
     ax.set_title(title)
+    ax.legend()
 
     return ax
 

@@ -16,7 +16,7 @@ from __future__ import division
 
 import warnings
 from time import time
-
+from . import risk
 import empyrical as ep
 from IPython.display import display, Markdown
 import matplotlib.gridspec as gridspec
@@ -34,12 +34,18 @@ from . import txn
 from . import utils
 
 FACTOR_PARTITIONS = {
-    'style': ['momentum', 'size', 'value', 'reversal_short_term',
-              'volatility'],
-    'sector': ['basic_materials', 'consumer_cyclical', 'financial_services',
-               'real_estate', 'consumer_defensive', 'health_care',
-               'utilities', 'communication_services', 'energy', 'industrials',
-               'technology']
+    'style': ['beta', 'btop', 'earnyield', 'growth', 'leverage',
+              'liquidity', 'momentum', 'resvol', 'nlsize', 'size'],
+    # 'sector': ['交通运输', '传媒', '保险', '农林牧渔', '医药', '商贸零售', '国防军工', '基础化工',
+    #                      '家电', '建材', '建筑', '房地产', '有色金属', '机械', '汽车', '消费者服务', '煤炭',
+    #                      '电力及公用事业', '电力设备及新能源', '电子', '石油石化', '纺织服装', '综合', '计算机',
+    #                      '证券', '轻工制造', '通信', '酒类', '钢铁', '银行', '非银金融', '食品饮料']
+    'sector': ['oil_petrochemical', 'coal', 'non-ferrous_metal', 'electricity_utilities', 'steel',
+               'chemical', 'construction', 'building_materials ', 'light_industry_manufacturing',
+               'mechanical', 'new_energy', 'national_defense_military', 'car', 'consumer_discretionary',
+               'consumer_service', 'home_appliance', 'texitile', 'health_care', 'food_beverage', 'agriculture_fishery',
+               'bank', 'financials', 'real_estate', 'transportation', 'electronics', 'telecommunication_services',
+               'information_technology', 'others', 'media', 'white_wine', 'insurance', 'security']
 }
 
 
@@ -168,8 +174,8 @@ def create_full_tear_sheet(returns,
         - See create_perf_attrib_tear_sheet().
     """
 
-    if (unadjusted_returns is None) and (slippage is not None) and\
-       (transactions is not None):
+    if (unadjusted_returns is None) and (slippage is not None) and \
+            (transactions is not None):
         unadjusted_returns = returns.copy()
         returns = txn.adjust_returns_for_slippage(returns, positions,
                                                   transactions, slippage)
@@ -322,8 +328,8 @@ def create_simple_tear_sheet(returns,
         benchmark_sections,
     ])
 
-    if live_start_date is not None:
-        live_start_date = ep.utils.get_utc_timestamp(live_start_date)
+    # if live_start_date is not None:
+        # live_start_date = ep.utils.get_utc_timestamp(live_start_date)
 
     plotting.show_perf_stats(returns,
                              benchmark_rets,
@@ -414,7 +420,7 @@ def create_returns_tear_sheet(returns, positions=None,
                               bootstrap=False,
                               turnover_denom='AGB',
                               header_rows=None,
-                              return_fig=False):
+                              return_fig=True):
     """
     Generate a number of plots for analyzing a strategy's returns.
 
@@ -477,7 +483,7 @@ def create_returns_tear_sheet(returns, positions=None,
 
     if live_start_date is not None:
         vertical_sections += 1
-        live_start_date = ep.utils.get_utc_timestamp(live_start_date)
+        # live_start_date = ep.utils.get_utc_timestamp(live_start_date)
 
     if benchmark_rets is not None:
         vertical_sections += 1
@@ -594,6 +600,8 @@ def create_returns_tear_sheet(returns, positions=None,
     if return_fig:
         return fig
 
+    plt.show()
+
 
 @plotting.customize
 def create_position_tear_sheet(returns, positions,
@@ -688,6 +696,7 @@ def create_position_tear_sheet(returns, positions,
 
     if return_fig:
         return fig
+    plt.show()
 
 
 @plotting.customize
@@ -774,6 +783,7 @@ def create_txn_tear_sheet(returns, positions, transactions,
 
     if return_fig:
         return fig
+    plt.show()
 
 
 @plotting.customize
@@ -864,6 +874,7 @@ def create_round_trip_tear_sheet(returns, positions, transactions,
 
     if return_fig:
         return fig
+    plt.show()
 
 
 @plotting.customize
@@ -948,6 +959,7 @@ def create_interesting_times_tear_sheet(returns, benchmark_rets=None,
 
     if return_fig:
         return fig
+    plt.show()
 
 
 @plotting.customize
@@ -1060,6 +1072,7 @@ def create_capacity_tear_sheet(returns, positions, transactions,
 
     if return_fig:
         return fig
+    plt.show()
 
 
 @plotting.customize
@@ -1115,12 +1128,17 @@ def create_perf_attrib_tear_sheet(returns,
         pos_in_dollars=pos_in_dollars
     )
 
-    display(Markdown("## Performance Relative to Common Risk Factors"))
+    # display(Markdown("## Performance Relative to Common Risk Factors"))
+    print(perf_attrib_data.head())
+    print("## Performance Relative to Common Risk Factors")
 
     # aggregate perf attrib stats and show summary table
     perf_attrib.show_perf_attrib_stats(returns, positions, factor_returns,
                                        factor_loadings, transactions,
                                        pos_in_dollars)
+
+    # plot specific_returns
+    # perf_attrib.plot_alpha_returns(perf_attrib_data['specific_returns'])
 
     # one section for the returns plot, and for each factor grouping
     # one section for factor returns, and one for risk exposures
@@ -1143,7 +1161,6 @@ def create_perf_attrib_tear_sheet(returns,
     if factor_partitions is not None:
 
         for factor_type, partitions in factor_partitions.items():
-
             columns_to_select = perf_attrib_data.columns.intersection(
                 partitions
             )
@@ -1158,7 +1175,6 @@ def create_perf_attrib_tear_sheet(returns,
             current_section += 1
 
         for factor_type, partitions in factor_partitions.items():
-
             columns_to_select = portfolio_exposures.columns.intersection(
                 partitions
             )
@@ -1187,3 +1203,4 @@ def create_perf_attrib_tear_sheet(returns,
 
     if return_fig:
         return fig
+    plt.show()

@@ -79,3 +79,18 @@ Please [open an issue](https://github.com/quantopian/pyfolio/issues/new) for sup
 If you'd like to contribute, a great place to look is the [issues marked with help-wanted](https://github.com/quantopian/pyfolio/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
 
 For a list of core developers and outside collaborators, see [the GitHub contributors list](https://github.com/quantopian/pyfolio/graphs/contributors).
+
+# The following functions are all simply passthroughs to empyrical. With the
+# exception of get_utc_timestamp, they are all deprecated and will be removed
+# in a later version.
+default_returns_func = empyrical.utils.default_returns_func
+get_fama_french = empyrical.utils.get_fama_french
+get_returns_cached = empyrical.utils.get_returns_cached
+get_symbol_returns_from_yahoo = empyrical.utils.get_symbol_returns_from_yahoo
+get_treasury_yield = empyrical.utils.get_treasury_yield
+get_utc_timestamp = empyrical.utils.get_utc_timestamp
+cache_dir = empyrical.utils.cache_dir
+ensure_directory = empyrical.utils.ensure_directory
+data_path = empyrical.utils.data_path
+_1_bday_ago = empyrical.utils._1_bday_ago
+load_portfolio_risk_factors = empyrical.utils.load_portfolio_risk_factors

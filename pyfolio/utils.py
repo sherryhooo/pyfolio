@@ -22,6 +22,7 @@ from matplotlib.pyplot import cm
 import numpy as np
 import pandas as pd
 from IPython.display import display, HTML
+import matplotlib.pylab as pl
 
 import empyrical.utils
 
@@ -190,7 +191,7 @@ def print_table(table,
         E.g. `'{0:.2%}'.format` for displaying 100 as '100.00%'.
     formatters : list or dict, optional
         Formatters to use by column, passed as the `formatters` arg to
-        pd.Dataframe.to_html.
+        pd.Dataframe.to_html. if do not display as html, reset format setting after printing table
     header_rows : dict, optional
         Extra rows to display at the top of the table.
     """
@@ -200,6 +201,11 @@ def print_table(table,
 
     if name is not None:
         table.columns.name = name
+
+    if formatters is not None:
+        # pd.set_option('display.float_format', lambda x: fmt.format(x))
+        pd.set_option('display.float_format', None)
+
 
     html = table.to_html(float_format=float_format, formatters=formatters)
 
@@ -216,7 +222,9 @@ def print_table(table,
         # Inject the new HTML
         html = html.replace('<thead>', '<thead>' + rows)
 
-    display(HTML(html))
+
+    # display(HTML(html))
+    print(pd.read_html(html)[0])
 
 
 def standardize_data(x):
@@ -510,6 +518,8 @@ def configure_legend(ax, autofmt_xdate=True, change_colors=False,
     if change_colors:
         for handle, color in zip(handles_sorted,
                                  cycle(COLORS)):
+        # for handle, color in zip(handles_sorted,
+        #                          cycle(pl.cm.jet(np.linspace(0,1,50)))):
 
             handle.set_color(color)
 
@@ -539,3 +549,4 @@ def sample_colormap(cmap_name, n_samples):
         colors.append(colormap(i))
 
     return colors
+
